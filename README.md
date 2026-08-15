@@ -2,6 +2,57 @@
 
 Implementation handoff: [REQUIREMENTS.md](REQUIREMENTS.md) · [WORKFLOW.md](WORKFLOW.md)
 
+## Run the React prototype
+
+The project is a conventional Vite + React app with a small Node API server. It runs in **Demo mode** without a key, so the animated orb and complete appointment flow can be tested immediately.
+
+```powershell
+# Terminal 1: API server
+$env:Path = "C:\Program Files\nodejs;" + $env:Path
+& "C:\Program Files\nodejs\node.exe" server\index.mjs
+
+# Terminal 2: React/Vite development server
+& "C:\Program Files\nodejs\npm.cmd" run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173).
+
+For a production-style local run:
+
+```powershell
+& "C:\Program Files\nodejs\npm.cmd" run build
+& "C:\Program Files\nodejs\node.exe" server\index.mjs
+```
+
+Then open [http://localhost:3000](http://localhost:3000). The API server serves the Vite `dist` build after `npm run build`.
+
+To enable live OpenAI Realtime voice, paste your key into `.env`:
+
+```env
+OPENAI_API_KEY=your_key_here
+OPENAI_REALTIME_MODEL=gpt-realtime-2.1-mini
+PORT=3000
+```
+
+Restart the server after changing `.env`. The key stays server-side; it is never placed in browser JavaScript. The default `gpt-realtime-2.1-mini` model is selected to keep voice development credit-conscious. The server falls back to Demo mode when the key is absent or the live session cannot be created.
+
+## Project layout
+
+```text
+.
+├── src/                    # React UI and voice session controller
+│   ├── App.jsx
+│   └── main.jsx
+├── public/                 # static assets only
+│   └── styles.css
+├── server/                 # secure OpenAI Realtime proxy
+│   └── index.mjs
+├── index.html              # Vite entry
+├── vite.config.js
+├── package.json
+└── .env                    # local key; never commit
+```
+
 > A voice-first public-health access assistant for people who struggle with apps, reading, vision, language, or reliable internet access.
 
 Sahaay helps an elderly, low-literacy, visually impaired, rural, or non-native-language user complete one essential task end to end: finding and booking a public-health appointment. It uses simple spoken conversation, reads every important detail back for confirmation, and hands off to a human when uncertain.
